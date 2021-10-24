@@ -1,0 +1,28 @@
+---
+- name: Gathering info about servers
+  hosts: masters
+  remote_user: root
+  tasks:
+  # - name: Ping server
+  #   ansible.builtin.ping:
+  - name: Print all facts
+    ansible.builtin.debug:
+      msg:
+      - "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} " ## RedHat-7.9 
+      - "Server hostname is {{ ansible_facts.fqdn }}" ## Server name
+      - "Server IP address is {{ ansible_facts.eth0.ipv4.address }}" ## Server IP
+    register: test_result ## registers the variable, that has all of the output from here ^^
+    no_log: true ## surpresses the output from the stage
+
+  - name: Print variable from previos stage
+    ansible.builtin.debug:
+      msg: "Here we go {{ test_result }}"
+
+  # - name: Print vars with shell module
+  #   ansible.builtin.shell:
+  #     cmd: echo "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} "
+  #   register: shellcmd
+
+  # - name: Print date
+  #   ansible.builtin.debug:
+  #     msg: "{{ shellcmd.stdout }}"
