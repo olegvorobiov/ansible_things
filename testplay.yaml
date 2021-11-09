@@ -1,28 +1,67 @@
 ---
 - name: Gathering info about servers
-  hosts: masters
+  hosts: 192.168.1.231
   remote_user: root
+  vars: 
+    - expiration_date: "20220608210512Z"
   tasks:
-  # - name: Ping server
-  #   ansible.builtin.ping:
-  - name: Print all facts
-    ansible.builtin.debug:
-      msg:
-      - "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} " ## RedHat-7.9 
-      - "Server hostname is {{ ansible_facts.fqdn }}" ## Server name
-      - "Server IP address is {{ ansible_facts.eth0.ipv4.address }}" ## Server IP
-    register: test_result ## registers the variable, that has all of the output from here ^^
-    no_log: true ## surpresses the output from the stage
+    - name: Trimming and formatting the date
+      ansible.builtin.shell:
+        cmd: date -d $(echo "{{ expiration_date }}" | cut -b 1-8) +%m-%d-%Y
+      register: trimmed_date
+      
+    - name: Print trimmed date
+      debug:
+        msg: "{{ trimmed_date.stdout }}"
 
-  - name: Print variable from previos stage
-    ansible.builtin.debug:
-      msg: "Here we go {{ test_result }}"
+
+  # - name: Print out test var
+    # debug:
+      # msg: "{{ ansible_facts }}"
+  # - name: Register facts about the system
+    # debug:
+      # msg: "{{ ansible_facts.default_ipv4.interface }}"
+    # register: test
+    # no_log: true
+           
+  # - name: setting var
+    # set_fact:
+      # test: "{{ ansible_facts | json_query('date_time.date') | regex_search('.*2021.*') }}"
+
+  # - name: Print var
+    # debug:
+      # msg: "{{ test }}"
+
+  # - name: Trim var
+    # shell:
+      # cmd: echo "{{ test }}" | cut -d "-" -f1
+    # register: newvar
+
+  # - name: Print var
+    # debug:
+      # msg: "{{ newvar.stdout }}"
+
+
+  # - name: Ping server
+    # ansible.builtin.ping:
+  # - name: Print all facts
+    # ansible.builtin.debug:
+      # msg:
+        # - "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} " ## RedHat-7.9 
+        # - "Server hostname is {{ ansible_facts.fqdn }}" ## Server name
+        # - "Server IP address is {{ ansible_facts.*.ipv4.address }}" ## Server IP
+    # register: test_result ## registers the variable, that has all of the output from here ^^
+    # no_log: true ## surpresses the output from the stage
+
+  # - name: Print variable from previos stage
+    # ansible.builtin.debug:
+      # msg: "Here we go {{ test_result }}"
 
   # - name: Print vars with shell module
-  #   ansible.builtin.shell:
-  #     cmd: echo "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} "
-  #   register: shellcmd
+    # ansible.builtin.shell:
+      # cmd: echo "OS family and version is {{ ansible_facts.os_family }}-{{ ansible_facts.distribution_version }} "
+    # register: shellcmd
 
   # - name: Print date
-  #   ansible.builtin.debug:
-  #     msg: "{{ shellcmd.stdout }}"
+    # ansible.builtin.debug:
+      # msg: "{{ shellcmd.stdout }}"
